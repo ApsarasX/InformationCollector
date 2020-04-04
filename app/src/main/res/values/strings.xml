@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">信息收集者</string>
+    <string name="button_label">获取信息</string>
 </resources>

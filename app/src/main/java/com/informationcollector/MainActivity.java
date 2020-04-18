@@ -18,5 +18,7 @@ public class MainActivity extends AppCompatActivity {
         new HardwareInformation(ctx).output();
         new SystemInformation(ctx).output();
         new NetworkInformation(ctx).output();
+        new SensorInformation(ctx).output();
+        new LocationInformation(ctx).output();
     }
 }

@@ -1,7 +1,8 @@
-package com.informationcollector;
+package com.informationcollector.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +10,10 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Environment;
+import android.os.StatFs;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
@@ -24,54 +28,37 @@ import com.karumi.dexter.listener.PermissionGrantedResponse;
 import com.karumi.dexter.listener.PermissionRequest;
 import com.karumi.dexter.listener.single.PermissionListener;
 
-final class HardwareInformation extends BaseInformation {
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-    HardwareInformation(Context context) {
+public final class HardwareInfo extends BaseInfo {
+
+    public HardwareInfo(Context context) {
         super(context);
     }
 
-    void output() {
-        Log.i("主板版本", Build.BOARD);
-        Log.i("设备引导程序版本", Build.BOOTLOADER);
-        Log.i("设备品牌", Build.BRAND);
-        Log.i("设备工业设计名称", Build.DEVICE);
-        Log.i("设备显示的版本", Build.DISPLAY);
-        Log.i("设备硬件名称", Build.HARDWARE);
-        Log.i("设备版本号", Build.ID);
-        Log.i("设备制造商", Build.MANUFACTURER);
-        Log.i("设备型号", Build.MODEL);
-        Log.i("设备产品名称", Build.PRODUCT);
-        this.getIMEI();
-        StringBuilder sb = new StringBuilder();
-        for (String abi : Build.SUPPORTED_32_BIT_ABIS) {
-            sb.append(abi);
-        }
-        Log.i("设备支持的32位ABI", sb.toString());
-        sb.delete(0, sb.length());
-        for (String abi : Build.SUPPORTED_64_BIT_ABIS) {
-            sb.append(abi);
-        }
-        Log.i("设备支持的64位ABI", sb.toString());
-        sb.delete(0, sb.length());
-        for (String abi : Build.SUPPORTED_ABIS) {
-            sb.append(abi);
-        }
-        Log.i("设备支持的ABI", sb.toString());
-        this.getScreenInformation();
-        this.getBatteryInformation();
-    }
-
-    private void getIMEI() {
+    @Override
+    public void output() {
         Dexter.withContext(this.context).withPermission(Manifest.permission.READ_PHONE_STATE).withListener(new PermissionListener() {
             @Override
             public void onPermissionGranted(PermissionGrantedResponse response) {
-                HardwareInformation.this.getIMEIReally();
+                HardwareInfo.this.getGeneralInformation();
+                HardwareInfo.this.getIMEI();
+                HardwareInfo.this.getScreenInformation();
+                HardwareInfo.this.getBatteryInformation();
+                HardwareInfo.this.getCPUInformation();
+                HardwareInfo.this.getMemoryInformation();
             }
 
             @Override
             public void onPermissionDenied(PermissionDeniedResponse response) {
                 if (response.isPermanentlyDenied()) {
-                    Toast.makeText(HardwareInformation.this.context, "需获取电话状态才可正常运行", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HardwareInfo.this.context, "需开启获取电话状态权限", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -82,8 +69,20 @@ final class HardwareInformation extends BaseInformation {
         }).check();
     }
 
-    // Android Q以下才会调用
-    private void getIMEIReally() {
+    private void getGeneralInformation() {
+        Log.i("主板名称", Build.BOARD);
+        Log.i("系统引导程序版本", Build.BOOTLOADER);
+        Log.i("系统定制商", Build.BRAND);
+        Log.i("设备参数", Build.DEVICE);
+        Log.i("屏幕参数", Build.DISPLAY);
+        Log.i("设备硬件名称", Build.HARDWARE);
+        Log.i("设备版本号", Build.ID);
+        Log.i("设备制造商", Build.MANUFACTURER);
+        Log.i("设备型号", Build.MODEL);
+        Log.i("设备产品名称", Build.PRODUCT);
+    }
+
+    private void getIMEI() {
         if (ActivityCompat.checkSelfPermission(this.context, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
@@ -228,6 +227,109 @@ final class HardwareInformation extends BaseInformation {
             } else {
                 Log.i("电池电压", voltage + "V");
             }
+        }
+    }
+
+    private void getCPUInformation() {
+        try {
+            FileReader fr = new FileReader("/proc/cpuinfo");
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] array = line.split(":\\s+", 2);
+                if (array[0].startsWith("Hardware")) {
+                    Log.i("CPU型号", array[1]);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        {
+            StringBuilder sb = new StringBuilder();
+            for (String abi : Build.SUPPORTED_32_BIT_ABIS) {
+                sb.append(abi).append(",");
+            }
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            Log.i("CPU ABI(32位)", sb.toString());
+            sb.delete(0, sb.length());
+            for (String abi : Build.SUPPORTED_64_BIT_ABIS) {
+                sb.append(abi).append(",");
+            }
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            Log.i("CPU ABI(64位)", sb.toString());
+            sb.delete(0, sb.length());
+            for (String abi : Build.SUPPORTED_ABIS) {
+                sb.append(abi).append(",");
+            }
+            if (sb.length() > 0) {
+                sb.deleteCharAt(sb.length() - 1);
+            }
+            Log.i("CPU ABI", sb.toString());
+        }
+        try {
+            File dir = new File("/sys/devices/system/cpu/");
+            File[] files = dir.listFiles((dirname, filename) -> Pattern.matches("cpu[0-9]", filename));
+            if (files != null) {
+                int coresCount = files.length;
+                Log.i("CPU核数", String.valueOf(coresCount));
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        {
+            Map<String, String> map = new HashMap<String, String>() {
+                {
+                    put("CPU最大频率", "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq");
+                    put("CPU最小频率", "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq");
+                    put("CPU实时频率", "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
+                }
+            };
+            map.forEach((k, v) -> {
+                try (BufferedReader br = new BufferedReader(new FileReader(v))) {
+                    String text = br.readLine();
+                    String freqStr = text.trim();
+                    double freq = Double.parseDouble(freqStr) / 1000;
+                    Log.i(k, freq + "MHz");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader("/sys/class/thermal/thermal_zone9/subsystem/thermal_zone9/temp"))) {
+            String temp = br.readLine();
+            String temperature = TextUtils.isEmpty(temp) ? null : temp.length() >= 5 ? (Double.parseDouble(temp) / 1000) + "" : temp;
+            Log.i("CPU温度", temperature + "℃");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getMemoryInformation() {
+        {
+            ActivityManager am = (ActivityManager) this.context.getSystemService(Service.ACTIVITY_SERVICE);
+            ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
+            if (am != null) {
+                am.getMemoryInfo(mi);
+            }
+            double availRam = (double) mi.availMem / 1e9;
+            double totalRam = (double) mi.totalMem / 1e9;
+            Log.i("RAM全部内存", String.format("%.2fGB", totalRam));
+            Log.i("RAM可用内存", String.format("%.2fGB", availRam));
+        }
+        {
+            File path = Environment.getDataDirectory();
+            StatFs stat = new StatFs(path.getPath());
+            long blockSize = stat.getBlockSizeLong();
+            long availableBlocks = stat.getAvailableBlocksLong();
+            long totalBlocks = stat.getBlockCountLong();
+            double totalRom = (double) (totalBlocks * blockSize) / 1e9;
+            double availRom = (double) (availableBlocks * blockSize) / 1e9;
+            Log.i("ROM全部内存", String.format("%.2fGB", totalRom));
+            Log.i("ROM可用内存", String.format("%.2fGB", availRom));
         }
     }
 }

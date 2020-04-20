@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public abstract class SharedFragment extends Fragment {
 
@@ -36,6 +37,17 @@ public abstract class SharedFragment extends Fragment {
             this.mUpdateDataList.clear();
             this.listViewAdapter.notifyDataSetChanged();
         }
+    }
+
+    public void updateSingleData(Tuple data) {
+        for (Map<String, String> itemMap : this.mDataList) {
+            if (Objects.equals(itemMap.get(dataKeyArr[0]), data.getFirst())) {
+                itemMap.put(dataKeyArr[1], data.getSecond());
+                this.listViewAdapter.notifyDataSetChanged();
+                return;
+            }
+        }
+        this.addSingleData(data);
     }
 
     public void addSingleData(Tuple data) {

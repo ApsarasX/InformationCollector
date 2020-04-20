@@ -1,6 +1,7 @@
 package com.informationcollector.fragments;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,12 +15,12 @@ import androidx.fragment.app.Fragment;
 import com.informationcollector.R;
 import com.informationcollector.utils.info.SystemInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class AppListFragment extends Fragment {
-    private List<Map<String, String>> mDataList;
     private static int[] itemIdArr = new int[]{
             R.id.app_package_name,
             R.id.app_version,
@@ -41,9 +42,17 @@ public class AppListFragment extends Fragment {
             "app_system"
     };
 
+    private List<Map<String, String>> mDataList = new ArrayList<>();
+    private SimpleAdapter mListViewAdapter;
+    private Handler mHandler = new Handler();
 
     private void getViewData() {
-        this.mDataList = SystemInfo.getAppListInfo(Objects.requireNonNull(getContext()));
+        new Thread(() -> {
+            AppListFragment.this.mDataList.addAll(SystemInfo.getAppListInfo(Objects.requireNonNull(getContext())));
+            if (AppListFragment.this.mListViewAdapter != null) {
+                mHandler.post(() -> AppListFragment.this.mListViewAdapter.notifyDataSetChanged());
+            }
+        }).start();
     }
 
     @Override
@@ -51,9 +60,8 @@ public class AppListFragment extends Fragment {
         this.getViewData();
         View root = inflater.inflate(R.layout.fragment_shared, container, false);
         ListView listView = root.findViewById(R.id.info_list);
-        SimpleAdapter adapter = new SimpleAdapter(getContext(), this.mDataList, R.layout.item_app, dataKeyArr, itemIdArr);
-        listView.setAdapter(adapter);
-//        listView.setDividerHeight(1);
+        mListViewAdapter = new SimpleAdapter(getContext(), this.mDataList, R.layout.item_app, dataKeyArr, itemIdArr);
+        listView.setAdapter(mListViewAdapter);
         listView.setScrollBarSize(0);
         return root;
     }

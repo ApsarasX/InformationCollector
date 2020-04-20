@@ -9,7 +9,6 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
 
@@ -21,7 +20,7 @@ import java.util.List;
 
 public final class LocationInfo {
     private Context context;
-
+    private SharedFragment fragment;
     private LocationManager locationManager;
 
     private LocationListener locationListener = new LocationListener() {
@@ -52,8 +51,6 @@ public final class LocationInfo {
 
         }
     };
-
-    private SharedFragment fragment;
 
     public LocationInfo(SharedFragment fragment, Context context) {
         this.context = context;
@@ -97,8 +94,6 @@ public final class LocationInfo {
 
     @SuppressLint("DefaultLocale")
     private void getLatAndLng(Location location) {
-        Log.i("经度", String.valueOf(location.getLongitude()));
-        Log.i("纬度", String.valueOf(location.getLatitude()));
         ArrayList<Tuple> result = new ArrayList<Tuple>() {
             {
                 add(new Tuple("经度", String.format("%.5f", location.getLongitude())));

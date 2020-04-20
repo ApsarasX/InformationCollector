@@ -198,7 +198,7 @@ public final class HardwareInfo {
             }
             {
                 int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-                String statusStr = "未定义";
+                String statusStr = null;
                 switch (status) {
                     case BatteryManager.BATTERY_STATUS_CHARGING:
                         statusStr = "充电中";
@@ -216,11 +216,13 @@ public final class HardwareInfo {
                         statusStr = "未知";
                         break;
                 }
-                result.add(new Tuple("电池状态", statusStr));
+                if (statusStr != null) {
+                    result.add(new Tuple("电池状态", statusStr));
+                }
             }
             {
                 int healthStatus = batteryStatus.getIntExtra(BatteryManager.EXTRA_HEALTH, -1);
-                String statusStr = "未定义";
+                String statusStr = null;
                 switch (healthStatus) {
                     case BatteryManager.BATTERY_HEALTH_COLD:
                         statusStr = "过冷";
@@ -244,11 +246,13 @@ public final class HardwareInfo {
                         statusStr = "未知";
                         break;
                 }
-                result.add(new Tuple("电池健康状态", statusStr));
+                if (statusStr != null) {
+                    result.add(new Tuple("电池健康状态", statusStr));
+                }
             }
             {
                 int plugStatus = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-                String statusStr = "未定义";
+                String statusStr = null;
                 switch (plugStatus) {
                     case BatteryManager.BATTERY_PLUGGED_AC:
                         statusStr = "充电器(交流电)";
@@ -262,7 +266,9 @@ public final class HardwareInfo {
                     default:
                         break;
                 }
-                result.add(new Tuple("充电方式", statusStr));
+                if (statusStr != null) {
+                    result.add(new Tuple("充电方式", statusStr));
+                }
             }
             String technology = batteryStatus.getStringExtra(BatteryManager.EXTRA_TECHNOLOGY);
             int temperature = batteryStatus.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1);

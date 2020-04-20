@@ -41,8 +41,8 @@ public final class NetworkInfo {
                 result.add(new Tuple("SIM卡" + idx + "网络运营商", info.getCarrierName().toString()));
                 result.add(new Tuple("SIM卡" + idx + "网络运营商国家代码", info.getCountryIso()));
                 result.add(new Tuple("SIM卡" + idx + "电话号码", info.getNumber()));
-                result.add(new Tuple("SIM卡" + idx + "是否允许漫游", String.valueOf(info.getDataRoaming() == SubscriptionManager.DATA_ROAMING_ENABLE)));
-                result.add(new Tuple("SIM卡" + idx + "是否正在漫游", String.valueOf(sm.isNetworkRoaming(info.getSubscriptionId()))));
+                result.add(new Tuple("SIM卡" + idx + "是否允许漫游", info.getDataRoaming() == SubscriptionManager.DATA_ROAMING_ENABLE ? "是" : "否"));
+                result.add(new Tuple("SIM卡" + idx + "是否正在漫游", sm.isNetworkRoaming(info.getSubscriptionId()) ? "是" : "否"));
             }
         }
         return result;
@@ -120,25 +120,12 @@ public final class NetworkInfo {
         }
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
-            result.add(new Tuple("蓝牙是否打开", String.valueOf(adapter.isEnabled())));
+            result.add(new Tuple("蓝牙是否打开", adapter.isEnabled() ? "是" : "否"));
             result.add(new Tuple("本机蓝牙名称", adapter.getName()));
-            result.add(new Tuple("蓝牙是否正在扫描", String.valueOf(adapter.isDiscovering())));
+            result.add(new Tuple("蓝牙是否正在扫描", adapter.isDiscovering() ? "是" : "否"));
         } else {
             result.add(new Tuple("蓝牙", "不支持"));
         }
         return result;
     }
-
-//    public ArrayList<Tuple> getBluetoothInformation() {
-//        ArrayList<Tuple> result = new ArrayList<>();
-//        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
-//        if (adapter != null) {
-//            result.add(new Tuple("蓝牙是否打开", String.valueOf(adapter.isEnabled())));
-//            result.add(new Tuple("本机蓝牙名称", adapter.getName()));
-//            result.add(new Tuple("蓝牙是否正在扫描", String.valueOf(adapter.isDiscovering())));
-//        } else {
-//            result.add(new Tuple("蓝牙", "不支持"));
-//        }
-//        return result;
-//    }
 }

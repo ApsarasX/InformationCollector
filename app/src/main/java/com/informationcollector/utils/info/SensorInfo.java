@@ -118,14 +118,8 @@ public final class SensorInfo {
                 case Sensor.TYPE_STEP_DETECTOR:
                     sensorTypeStr = "步进监测";
                     break;
-                case Sensor.TYPE_ACCELEROMETER_UNCALIBRATED:
-                case Sensor.TYPE_GAME_ROTATION_VECTOR:
-                case Sensor.TYPE_GYROSCOPE_UNCALIBRATED:
-                case Sensor.TYPE_MAGNETIC_FIELD_UNCALIBRATED:
-                case Sensor.TYPE_ORIENTATION:
-                    return;
                 default:
-                    sensorTypeStr = sensorEvent.sensor.getStringType();
+                    return;
             }
             SensorInfo.this.fragment.updateSingleData(new Tuple(sensorTypeStr, msg.toString()));
         }

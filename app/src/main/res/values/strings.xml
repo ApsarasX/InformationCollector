@@ -1,4 +1,22 @@
 <resources>
-    <string name="app_name">信息收集者</string>
-    <string name="button_label">获取信息</string>
+    <string name="app_name">信息收集</string>
+    <string name="tab_general">概况</string>
+    <string name="tab_cpu">处理器</string>
+    <string name="tab_memory">内存</string>
+    <string name="tab_display">屏幕</string>
+    <string name="tab_battery">电池</string>
+    <string name="tab_network">网络</string>
+    <string name="tab_location">定位</string>
+    <string name="tab_os">操作系统</string>
+    <string name="tab_app_list">软件列表</string>
+    <string name="tab_operator">运营商</string>
+    <string name="tab_sensor">传感器</string>
+    <string name="text_app_name">应用名</string>
+    <string name="text_package_name">包名</string>
+    <string name="text_version">版本</string>
+    <string name="text_target_sdk">目标SDK</string>
+    <string name="text_min_sdk">最小SDK</string>
+    <string name="text_last_update_time">最近更新时间</string>
+    <string name="text_first_install_time">首次安装时间</string>
+    <string name="text_is_system_app">是否为系统APP</string>
 </resources>

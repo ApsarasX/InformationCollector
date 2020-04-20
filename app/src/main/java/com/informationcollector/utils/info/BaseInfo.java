@@ -1,4 +1,4 @@
-package com.informationcollector.utils;
+package com.informationcollector.utils.info;
 
 import android.content.Context;
 

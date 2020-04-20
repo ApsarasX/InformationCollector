@@ -8,10 +8,10 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.TextUtils;
 
+import com.informationcollector.utils.string.StringUtil;
 import com.informationcollector.utils.type.Tuple;
 
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +25,8 @@ public final class SystemInfo {
     public static ArrayList<Tuple> getOSInfo() {
         ArrayList<Tuple> result = new ArrayList<>();
         Properties properties = System.getProperties();
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         result.add(new Tuple("系统标签", Build.TAGS));
-        result.add(new Tuple("系统构建时间", f.format(Build.TIME)));
+        result.add(new Tuple("系统构建时间", StringUtil.getFormatDateTimeStr(Build.TIME)));
         result.add(new Tuple("系统构建类型", Build.TYPE));
         result.add(new Tuple("设备主机地址", Build.HOST));
         result.add(new Tuple("系统用户名", Build.USER));
@@ -64,7 +63,6 @@ public final class SystemInfo {
         ArrayList<Map<String, String>> result = new ArrayList<>();
         PackageManager pm = context.getPackageManager();
         List<PackageInfo> list = pm.getInstalledPackages(0);
-        SimpleDateFormat f = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         for (PackageInfo packInfo : list) {
             Map<String, String> itemMap = new HashMap<>();
             ApplicationInfo appInfo = packInfo.applicationInfo;
@@ -73,9 +71,9 @@ public final class SystemInfo {
             itemMap.put("app_name", appInfo.loadLabel(pm).toString());
             itemMap.put("app_target_sdk", String.valueOf(appInfo.targetSdkVersion));
             itemMap.put("app_min_sdk", String.valueOf(appInfo.minSdkVersion));
-            itemMap.put("app_last_update_time", f.format(packInfo.lastUpdateTime));
-            itemMap.put("app_first_install_time", f.format(packInfo.firstInstallTime));
-            itemMap.put("app_system", (appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM ? "是" : "否");
+            itemMap.put("app_last_update_time", StringUtil.getFormatDateTimeStr(packInfo.lastUpdateTime));
+            itemMap.put("app_first_install_time", StringUtil.getFormatDateTimeStr(packInfo.firstInstallTime));
+            itemMap.put("app_system", StringUtil.getBoolStr((appInfo.flags & ApplicationInfo.FLAG_SYSTEM) == ApplicationInfo.FLAG_SYSTEM));
             itemMap.put("last_update_time", String.valueOf(packInfo.lastUpdateTime));
             result.add(itemMap);
         }

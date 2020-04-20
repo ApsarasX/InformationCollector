@@ -19,6 +19,7 @@ import android.view.WindowManager;
 
 import androidx.core.app.ActivityCompat;
 
+import com.informationcollector.utils.string.StringUtil;
 import com.informationcollector.utils.type.Tuple;
 
 import java.io.BufferedReader;
@@ -174,7 +175,7 @@ public final class HardwareInfo {
         if (batteryStatus != null) {
             {
                 boolean present = batteryStatus.getBooleanExtra(BatteryManager.EXTRA_PRESENT, false);
-                result.add(new Tuple("电池是否存在", present ? "是" : "否"));
+                result.add(new Tuple("电池是否存在", StringUtil.getBoolStr(present)));
             }
             {
                 Object mPowerProfile;

@@ -17,6 +17,7 @@ import android.telephony.SubscriptionManager;
 
 import androidx.core.app.ActivityCompat;
 
+import com.informationcollector.utils.string.StringUtil;
 import com.informationcollector.utils.type.Tuple;
 
 import java.net.NetworkInterface;
@@ -41,8 +42,8 @@ public final class NetworkInfo {
                 result.add(new Tuple("SIM卡" + idx + "网络运营商", info.getCarrierName().toString()));
                 result.add(new Tuple("SIM卡" + idx + "网络运营商国家代码", info.getCountryIso()));
                 result.add(new Tuple("SIM卡" + idx + "电话号码", info.getNumber()));
-                result.add(new Tuple("SIM卡" + idx + "是否允许漫游", info.getDataRoaming() == SubscriptionManager.DATA_ROAMING_ENABLE ? "是" : "否"));
-                result.add(new Tuple("SIM卡" + idx + "是否正在漫游", sm.isNetworkRoaming(info.getSubscriptionId()) ? "是" : "否"));
+                result.add(new Tuple("SIM卡" + idx + "是否允许漫游", StringUtil.getBoolStr(info.getDataRoaming() == SubscriptionManager.DATA_ROAMING_ENABLE)));
+                result.add(new Tuple("SIM卡" + idx + "是否正在漫游", StringUtil.getBoolStr(sm.isNetworkRoaming(info.getSubscriptionId()))));
             }
         }
         return result;
@@ -53,7 +54,7 @@ public final class NetworkInfo {
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Service.CONNECTIVITY_SERVICE);
         if (cm != null) {
             Network network = cm.getActiveNetwork();
-            result.add(new Tuple("网络是否可用", network != null ? "是" : "否"));
+            result.add(new Tuple("网络是否可用", StringUtil.getBoolStr(network != null)));
             if (network != null) {
                 NetworkCapabilities netCap = cm.getNetworkCapabilities(network);
                 if (netCap != null) {
@@ -120,9 +121,9 @@ public final class NetworkInfo {
         }
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter != null) {
-            result.add(new Tuple("蓝牙是否打开", adapter.isEnabled() ? "是" : "否"));
+            result.add(new Tuple("蓝牙是否打开", StringUtil.getBoolStr(adapter.isEnabled())));
             result.add(new Tuple("本机蓝牙名称", adapter.getName()));
-            result.add(new Tuple("蓝牙是否正在扫描", adapter.isDiscovering() ? "是" : "否"));
+            result.add(new Tuple("蓝牙是否正在扫描", StringUtil.getBoolStr(adapter.isDiscovering())));
         } else {
             result.add(new Tuple("蓝牙", "不支持"));
         }

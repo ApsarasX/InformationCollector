@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.informationcollector.R;
-import com.informationcollector.utils.info.SystemInfo;
+import com.informationcollector.utils.info.AppInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class AppListFragment extends Fragment {
 
     private void getViewData() {
         new Thread(() -> {
-            AppListFragment.this.mDataList.addAll(SystemInfo.getAppListInfo(Objects.requireNonNull(getContext())));
+            AppListFragment.this.mDataList.addAll(AppInfo.getAppListInfo(Objects.requireNonNull(getContext())));
             if (AppListFragment.this.mListViewAdapter != null) {
                 mHandler.post(() -> AppListFragment.this.mListViewAdapter.notifyDataSetChanged());
             }

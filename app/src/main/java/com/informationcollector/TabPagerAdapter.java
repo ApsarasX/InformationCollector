@@ -22,10 +22,6 @@ import com.informationcollector.fragments.OperatorFragment;
 import com.informationcollector.fragments.PlaceholderFragment;
 import com.informationcollector.fragments.SensorFragment;
 
-/**
- * A [FragmentPagerAdapter] that returns a fragment corresponding to
- * one of the sections/tabs/pages.
- */
 public class TabPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
